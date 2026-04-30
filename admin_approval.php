@@ -18,30 +18,28 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        .main-content { margin-left: 250px; padding: 30px; transition: 0.3s; }
+        /* Siguraduhin na may puwang para sa sidebar */
+        .main-content { margin-left: 260px; padding: 30px; transition: 0.3s; }
         .table thead { background-color: #343a40; color: white; }
-        .badge-registration { background-color: #17a2b8; color: white; } /* Cyan for New */
-        .badge-reenrollment { background-color: #007bff; color: white; } /* Blue for Old */
+        .badge-registration { background-color: #17a2b8; color: white; }
+        .badge-reenrollment { background-color: #007bff; color: white; }
         .card { border-radius: 15px; }
+        .profile-img { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 1px solid #eee; }
+        .placeholder-icon { width: 45px; height: 45px; border-radius: 50%; background: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; }
+        
+        /* Responsive adjustment para sa mobile kung mawala ang sidebar */
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; }
+        }
     </style>
 </head>
 <body style="background-color: #f1f3f6;">
 
-    <?php include('sidebar.php'); ?>
+    <?php include('sidebar.php'); ?> 
 
     <div class="main-content">
-        
-        <?php if(isset($_SESSION['message'])): ?>
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-check-circle mr-2"></i> <?= $_SESSION['message']; ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        <?php unset($_SESSION['message']); endif; ?>
-
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold text-dark">Student Enrollment Requests</h4>
+            <h3 class="font-weight-bold">Student Enrollment Requests</h3>
             <a href="admin_dashboard.php" class="btn btn-secondary btn-sm shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
             </a>
@@ -53,53 +51,61 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
                     <table class="table table-hover text-center mb-0">
                         <thead>
                             <tr>
+                                <th class="py-3">Photo</th>
                                 <th class="py-3">Student Name</th>
                                 <th class="py-3">Grade Level</th>
                                 <th class="py-3">Gender</th>
-                                <th class="py-3">Type</th> <th class="py-3">Address</th>
+                                <th class="py-3">Type</th>
+                                <th class="py-3">Address</th>
                                 <th class="py-3">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            // Kinukuha ang lahat ng Pending requests
+                            <?php 
+                            // Query para sa Pending students
                             $query = "SELECT * FROM students WHERE status = 'Pending' ORDER BY student_id DESC";
                             $query_run = mysqli_query($conn, $query);
 
-                            if(mysqli_num_rows($query_run) > 0) {
-                                foreach($query_run as $row) {
-                                    ?>
-                                    <tr>
-                                        <td class="align-middle font-weight-bold"><?= $row['parent_name']; ?></td> 
-                                        <td class="align-middle"><?= $row['grade_level']; ?></td>
-                                        <td class="align-middle"><?= $row['gender']; ?></td>
-                                        <td class="align-middle">
-                                            <?php if($row['application_type'] == 'Registration'): ?>
-                                                <span class="badge badge-registration px-3 py-2">Registration</span>
-                                            <?php else: ?>
-                                                <span class="badge badge-reenrollment px-3 py-2">Re-enrollment</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="align-middle small text-muted text-left" style="max-width: 200px;">
-                                            <?= $row['address']; ?>
-                                        </td>
-                                        <td class="align-middle">
-                                            <div class="btn-group">
-                                                <a href="approve_logic.php?id=<?= $row['student_id']; ?>&status=Approved" 
-                                                   class="btn btn-success btn-sm px-3 mr-1 shadow-sm">
-                                                   <i class="fas fa-check mr-1"></i> Approve
-                                                </a>
-                                                <a href="approve_logic.php?reject_id=<?= $row['student_id']; ?>&status=Rejected" 
-                                                   class="btn btn-danger btn-sm px-3 shadow-sm">
-                                                   <i class="fas fa-times mr-1"></i> Reject
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
+                            if($query_run && mysqli_num_rows($query_run) > 0) {
+                                foreach($query_run as $row) { 
+                            ?>
+                            <tr class="align-middle">
+                                <td class="text-center py-3">
+                                    <?php if(!empty($row['image'])): ?>
+                                        <img src="uploads/<?= $row['image']; ?>" alt="Profile" class="profile-img">
+                                    <?php else: ?>
+                                        <div class="placeholder-icon">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+
+                                <td class="align-middle font-weight-bold"><?= $row['student_name']; ?></td>
+                                <td class="align-middle"><?= $row['grade_level']; ?></td>
+                                <td class="align-middle"><?= $row['gender']; ?></td>
+                                <td class="align-middle">
+                                    <?php if($row['application_type'] == 'Registration'): ?>
+                                        <span class="badge badge-registration px-3 py-2">Registration</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-reenrollment px-3 py-2">Re-enrollment</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="align-middle small text-muted text-left" style="max-width: 200px;"><?= $row['address']; ?></td>
+                                <td class="align-middle">
+                                    <div class="btn-group">
+                                        <a href="approve_logic.php?id=<?= $row['student_id']; ?>&status=Approved" class="btn btn-success btn-sm px-3 mr-1 shadow-sm">
+                                            <i class="fas fa-check mr-1"></i> Approve
+                                        </a>
+                                        <a href="approve_logic.php?reject_id=<?= $row['student_id']; ?>&status=Rejected" class="btn btn-danger btn-sm px-3 shadow-sm">
+                                            <i class="fas fa-times mr-1"></i> Reject
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php 
+                                } 
                             } else {
-                                echo "<tr><td colspan='6' class='py-5 text-muted'>No pending applications found.</td></tr>";
+                                echo "<tr><td colspan='7' class='py-5 text-muted'>No pending applications found.</td></tr>";
                             }
                             ?>
                         </tbody>

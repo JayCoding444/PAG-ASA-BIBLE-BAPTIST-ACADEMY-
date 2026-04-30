@@ -8,13 +8,8 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Student'){
     exit();
 }
 
-$user_id = $_SESSION['auth_user']['user_id'];
-
-// Kunin ang student_id base sa user_id
-$student_check = "SELECT student_id FROM students WHERE user_id = '$user_id' LIMIT 1";
-$student_check_run = mysqli_query($conn, $student_check);
-$student_row = mysqli_fetch_array($student_check_run);
-$student_id = $student_row['student_id'];
+// Burahin ang lumang query. Kunin ang ID direkta sa session na ginawa natin sa login_logic.php
+$student_id = $_SESSION['auth_user']['user_id'];
 ?>
 
 <!DOCTYPE html>

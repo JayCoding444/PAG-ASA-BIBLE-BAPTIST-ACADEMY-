@@ -4,15 +4,15 @@ include('db_connect.php');
 
 // Security Check
 if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
-    header("Location: login.php");
+    header("Location: login.php"); 
     exit(0);
 }
-?>
+?> 
 
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> 
+<html lang="en"> 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">  
     <title>PBA - Manage Teachers</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -31,12 +31,12 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
             border: 2px solid #fff;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             display: inline-block;
-            background-color: #e9ecef;
+            background-color: #e9ecef;  
         }
         .teacher-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; 
+            object-fit: cover;  
         }
 
         .table td { vertical-align: middle !important; }
@@ -52,18 +52,18 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
             <h4 class="fw-bold text-dark"><i class="fas fa-chalkboard-teacher text-success mr-2"></i>Faculty Members</h4>
             <button class="btn btn-success btn-sm px-4 shadow-sm" data-toggle="modal" data-target="#addTeacherModal">
                 <i class="fas fa-plus-circle mr-1"></i> Add New Teacher
-            </button>
+            </button> 
         </div>
 
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-6"> 
                 <form action="" method="GET">
                     <div class="input-group">
                         <input type="text" name="search" value="<?php if(isset($_GET['search'])){echo $_GET['search']; } ?>" class="form-control" placeholder="Search Teacher Name or ID...">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-success px-4">Search</button>
-                        </div>
-                    </div>
+                        </div> 
+                    </div> 
                 </form>
             </div>
             <div class="col-md-6">
@@ -146,8 +146,8 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
+        </div>  
+    </div> 
 
     <div class="modal fade" id="addTeacherModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">

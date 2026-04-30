@@ -1,228 +1,214 @@
+<?php
+session_start();
+// Redirect kung naka-login na ang teacher
+if(isset($_SESSION['auth']) && $_SESSION['auth_role'] == 'Teacher') {
+    header("Location: teacher_dashboard.php");
+    exit(0);
+} 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Login - Pag-asa Bible Baptist Academy</title>
+    <title>Teacher Portal | Pag-asa Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --teacher-blue: #2c3e50; /* Mas dark blue para maiba sa student green */
+            --glass-bg: rgba(255, 255, 255, 0.9);
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* Blue gradient para sa Teacher Theme */
-            background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
-        }
-
-        .login-container {
-            background: white;
-            width: 900px;
-            display: flex;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        }
-
-        /* Left Side: Branding */
-        .left-panel {
-            background-color: #f8f9fa;
-            flex: 1;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            border-right: 1px solid #eee;
-        }
-
-        .left-panel img {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .left-panel h2 {
-            color: #1a5276;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        .left-panel p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* Right Side: Form */
-        .right-panel {
-            flex: 1.2;
-            padding: 50px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .right-panel h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
+        body { 
+            margin: 0; 
+            background-image: url('pag-asa_school.jpg'); /* Consistent background image */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
             position: relative;
         }
 
-        .form-group i {
+        body::before {
+            content: "";
             position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #1a5276;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+            z-index: 1;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s;
-            outline: none;
+        .login-wrapper { 
+            display: flex; 
+            width: 100%; 
+            max-width: 1100px; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            position: relative;
+            z-index: 2;
         }
 
-        .form-group input:focus {
-            border-color: #1a5276;
+        .left-side { 
+            text-align: center; 
+            flex: 1; 
+            padding-right: 50px;
+        }
+
+        /* Circular Logo Style */
+        .left-side .logo-container {
+            width: 250px; 
+            height: 250px;
+            margin: 0 auto 30px auto; 
+            border-radius: 50%;
+            overflow: hidden;
+            border: 8px solid #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             background-color: #fff;
-            box-shadow: 0 0 8px rgba(26, 82, 118, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .left-side img { 
+            width: 90%; 
+            height: auto;
+            object-fit: contain;
         }
 
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #999;
-            font-size: 14px;
-            font-weight: 600;
+        .right-side { 
+            flex: 0.75; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(15px);
+            padding: 50px 45px; 
+            border-radius: 24px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #1a5276;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
+        .right-side h4 {
+            color: var(--teacher-blue);
             font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
+            margin-bottom: 5px;
         }
 
-        .login-btn:hover {
-            background-color: #154360;
+        .form-control { 
+            padding: 25px 15px; 
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            transition: 0.3s; 
+            background: #f9f9f9;
+        }
+
+        .form-control:focus { 
+            border-color: var(--teacher-blue); 
+            box-shadow: 0 0 10px rgba(44, 62, 80, 0.1); 
+        }
+
+        .login-btn { 
+            width: 100%;
+            padding: 14px; 
+            background: linear-gradient(to right, #2c3e50, #34495e);
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            transition: 0.4s ease; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn:hover { 
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(26, 82, 118, 0.3);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            color: #fff;
         }
 
-        .switch-portal {
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        .switch-portal a {
-            color: #1a5276;
-            text-decoration: none;
+        .links-container { 
+            text-align: center; 
+            margin-top: 25px; 
             font-size: 14px;
-            font-weight: 600;
         }
 
-        .switch-portal a:hover {
-            text-decoration: underline;
+        .student-link {
+            display: block;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed var(--teacher-blue);
+            border-radius: 10px;
+            color: var(--teacher-blue);
+            text-decoration: none;
+            font-weight: 600;
         }
 
         /* Responsive */
+        @media (max-width: 991px) {
+            .left-side { padding-right: 0; margin-bottom: 40px; }
+            .left-side .logo-container { width: 200px; height: 200px; }
+        }
         @media (max-width: 768px) {
-            .login-container {
-                flex-direction: column;
-                width: 90%;
-                margin: 20px;
-            }
-            .left-panel {
-                padding: 30px;
-            }
+            .login-wrapper { flex-direction: column; }
+            .right-side { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="left-panel">
-        <img src="Academy_Logo.jpg" alt="PBA Logo">
-        <h2>Teacher Portal</h2>
-        <p>Access your dashboard to manage student grades, schedules, and class announcements.</p>
+<div class="login-wrapper">
+    <div class="left-side d-none d-md-block">
+        <div class="logo-container">
+            <img src="Academy_Logo.jpg" alt="School Logo">
+        </div>
+        <h1 class="font-weight-bold" style="color: #fff; font-size: 3rem;">Teacher Portal</h1>
+        <p style="color: rgba(255,255,255,0.8);">Access your dashboard to manage student records</p>
     </div>
 
-    <div class="right-panel">
-        <h1>Welcome Back!</h1>
-        
-        <form action="authenticate_teacher.php" method="POST">
-            <div class="form-group">
-                <i class="fas fa-user-tie"></i>
-                <input type="text" name="username" placeholder="Teacher Username" required>
+    <div class="right-side">
+        <form action="teacher_authenticate.php" method="POST">
+            <h4 class="text-center">Welcome Back, Teacher!</h4>
+            <p class="text-center text-muted small mb-4">Please enter your credentials</p>
+
+            <?php if(isset($_SESSION['message'])): ?>
+                <div class="alert alert-danger py-2 small text-center"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+            <?php endif; ?>
+
+            <div class="form-group mb-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white border-right-0" style="border-radius: 12px 0 0 12px;"><i class="fas fa-user-tie text-muted"></i></span>
+                    </div>
+                    <input type="text" name="username" placeholder="Teacher Username" required class="form-control border-left-0" style="border-radius: 0 12px 12px 0;">
+                </div>
             </div>
             
-            <div class="form-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" name="password" id="teachPassInput" placeholder="Password" required>
-                <span id="teachToggleText" class="password-toggle">SHOW</span>
+            <div class="form-group mb-4">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white border-right-0" style="border-radius: 12px 0 0 12px;"><i class="fas fa-lock text-muted"></i></span>
+                    </div>
+                    <input type="password" name="password" id="passInput" placeholder="Password" required class="form-control border-left-0" style="border-radius: 0 12px 12px 0;">
+                </div>
             </div>
 
             <button type="submit" name="teacher_login_btn" class="login-btn">
-                LOGIN AS TEACHER
+                LOGIN AS TEACHER <i class="fas fa-sign-in-alt ml-2"></i>
             </button>
             
-            <div class="switch-portal">
-                <a href="login.php">
-                    <i class="fas fa-user-graduate mr-1"></i> Not a teacher? <strong>Student Login here</strong>
+            <div class="links-container">
+                <a href="login.php" class="student-link">
+                    <i class="fas fa-user-graduate mr-1"></i> Not a teacher? Student Login here
                 </a>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-    const teachBtn = document.getElementById('teachToggleText');
-    const teachInput = document.getElementById('teachPassInput');
-
-    teachBtn.addEventListener('click', function () {
-        if (teachInput.type === 'password') {
-            teachInput.type = 'text';
-            teachBtn.textContent = 'HIDE';
-        } else {
-            teachInput.type = 'password';
-            teachBtn.textContent = 'SHOW';
-        }
-    });
-</script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
