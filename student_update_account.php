@@ -2,11 +2,10 @@
 session_start();
 include('db_connect.php');
 
-if(isset($_POST['update_account'])) {
+if(isset($_POST['update_account_btn'])) {
     $user_id = $_SESSION['auth_user']['user_id'];
     
-    // Kunin ang mga inputs mula sa form
-    $parent_name = mysqli_real_escape_string($conn, $_POST['parent_name']);
+    // Kunin ang mga inputs mula sa form [cite: 22, 23]
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $contact_no = mysqli_real_escape_string($conn, $_POST['contact_no']);
     $gender = mysqli_real_escape_string($conn, $_POST['gender']);
@@ -15,30 +14,27 @@ if(isset($_POST['update_account'])) {
     $current_password = mysqli_real_escape_string($conn, $_POST['current_password']);
     $new_password = mysqli_real_escape_string($conn, $_POST['new_password']);
     
-    // 1. I-verify muna kung tama ang Current Password
+    // 1. I-verify ang Current Password at kunin ang lumang image [cite: 24, 25]
     $check_pwd_query = "SELECT password, image FROM students WHERE user_id='$user_id' LIMIT 1";
     $result = mysqli_query($conn, $check_pwd_query);
     $data = mysqli_fetch_assoc($result);
     $old_image = $data['image'];
 
-    // Note: Kung ang password mo ay plain text, gamitin ang direct comparison. 
-    // Kung hashed (password_hash), gamitin ang password_verify().
+    // 2. Check kung tama ang Current Password [cite: 27]
     if($current_password == $data['password']) {
         
-        // 2. Handle Profile Picture Upload
+        // Handle Profile Picture Upload [cite: 28, 29]
         $image = $_FILES['image']['name'];
         if($image != NULL) {
             $image_extension = pathinfo($image, PATHINFO_EXTENSION);
-            $filename = time().'.'.$image_extension; // Rename para walang duplicate
-            $update_filename = $filename;
+            $update_filename = time().'.'.$image_extension; // Rename file [cite: 29]
         } else {
-            $update_filename = $old_image; // Gamitin ang luma kung walang bagong upload
+            $update_filename = $old_image; // Gamitin ang luma kung walang bago [cite: 30]
         }
 
-        // 3. Update Query (Kasama ang password kung may bagong input)
+        // 3. Update Query (Dynamic: kasama ang password kung may bagong input) [cite: 31, 33]
         if(!empty($new_password)) {
             $update_query = "UPDATE students SET 
-                parent_name='$parent_name', 
                 email='$email', 
                 contact_no='$contact_no', 
                 gender='$gender', 
@@ -48,7 +44,6 @@ if(isset($_POST['update_account'])) {
                 WHERE user_id='$user_id'";
         } else {
             $update_query = "UPDATE students SET 
-                parent_name='$parent_name', 
                 email='$email', 
                 contact_no='$contact_no', 
                 gender='$gender', 
@@ -60,24 +55,26 @@ if(isset($_POST['update_account'])) {
         $query_run = mysqli_query($conn, $update_query);
 
         if($query_run) {
-            // I-move ang file sa folder kung nag-upload
-            if($image != NULL) {
-                move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/'.$update_filename);
-            }
-            
-            $_SESSION['message'] = "Account Updated Successfully";
-            header("Location: account_settings.php");
-            exit(0);
-        } else {
-            $_SESSION['message'] = "Something went wrong!";
-            header("Location: account_settings.php");
-            exit(0);
-        }
-
-    } else {
-        $_SESSION['message'] = "Current Password does not match!";
-        header("Location: account_settings.php");
-        exit(0);
-    }
+    // ... file move logic ...
+    $_SESSION['message'] = "Account Updated Successfully";
+    $_SESSION['message_type'] = "success"; // Green
+    header("Location: student_account_settings.php");
+    exit(0);
+} else {
+    $_SESSION['message'] = "Something went wrong!";
+    $_SESSION['message_type'] = "danger"; // Red
+    header("Location: student_account_settings.php");
+    exit(0);
+}
+// ...
+} else {
+    $_SESSION['message'] = "Current Password does not match!";
+    $_SESSION['message_type'] = "danger"; // Red
+    header("Location: student_account_settings.php");
+    exit(0);
+}
+} else {
+    header("Location: student_account_settings.php");
+    exit(0);
 }
 ?>

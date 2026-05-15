@@ -15,10 +15,14 @@ if(isset($_POST['next_to_account'])) {
     $_SESSION['reg_gender'] = $_POST['gender'];
     $_SESSION['reg_address'] = $_POST['address'];
 
-if(isset($_FILES['student_image'])) {
-        $img_name = $_FILES['student_image']['name'];
+    if(isset($_FILES['student_image']) && $_FILES['student_image']['error'] == 0) {
+        $img_name = time() . '_' . $_FILES['student_image']['name']; // Nilagyan ko ng time para unique ang filename
         $tmp_name = $_FILES['student_image']['tmp_name'];
-        $upload_dir = "uploads/"; // Siguraduhin na may folder ka na 'uploads'
+        $upload_dir = "uploads/"; 
+        
+        if(!is_dir($upload_dir)){
+            mkdir($upload_dir, 0777, true);
+        }
         
         move_uploaded_file($tmp_name, $upload_dir . $img_name);
         $_SESSION['reg_image'] = $img_name;
@@ -55,7 +59,7 @@ if(isset($_FILES['student_image'])) {
             margin: auto;
         }
         .form-header {
-            background: #0056b3; /* Blue header gaya ng dati mo pero rounded */
+            background: #0056b3; 
             color: white;
             padding: 30px;
             text-align: center;
@@ -67,19 +71,17 @@ if(isset($_FILES['student_image'])) {
             margin: 25px 0;
             font-weight: bold;
         }
-       /* Dagdag ito para sa dropdown consistency */
-select.form-control {
-    height: auto !important; /* Para hindi siya pilit na liliit */
-    padding: 10px 12px !important;
-    line-height: 1.5 !important;
-}
-
-.form-control {
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    height: 50px; /* Ginawa nating standard ang height para sa lahat */
-}
+        select.form-control {
+            height: auto !important; 
+            padding: 10px 12px !important;
+            line-height: 1.5 !important;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            height: 50px; 
+        }
         .btn-next {
             background-color: #2e7d32;
             color: white;
@@ -93,20 +95,6 @@ select.form-control {
             background-color: #1b5e20;
             transform: translateY(-2px);
         }
-        .important-notice {
-            background-color: #f1f8ff;
-            border-left: 4px solid #0056b3;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        @media print {
-    .btn-next, .btn-outline-secondary, .form-header, .text-muted, a[href="register_agreement.php"] {
-        display: none !important;
-    }
-    body { background: white !important; }
-    .registration-card { box-shadow: none !important; border: none !important; }
-}
     </style>
 </head>
 <body>
@@ -114,25 +102,15 @@ select.form-control {
 <div class="container">
     <div class="registration-card">
         <div class="form-header">
-           <img src="Academy_Logo.jpg" width="100" class="mb-2" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+           <img src="Academy_Logo.jpg" width="100" class="mb-2" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1; border: 2px solid #fff;">
             <h3 class="font-weight-bold">PAG-ASA BIBLE BAPTIST ACADEMY</h3>
             <p class="mb-0">Step 2 of 3: Student Personal Information</p>
         </div>
 
         <div class="card-body p-4 p-md-5">
-            <div class="important-notice mb-4">
-                <h6 class="font-weight-bold text-primary"><i class="fas fa-bullhorn mr-2"></i> IMPORTANT NOTICE:</h6>
-                <ul class="small mb-0 text-muted">
-                    <li><strong>Admin Approval:</strong> Subject to review before account activation.</li>
-                    <li><strong>Accuracy:</strong> Double-check your details to avoid delays.</li>
-                </ul>
-            </div>
-
-            <form action="" method="POST">
+            <form action="registration.php" method="POST" enctype="multipart/form-data">
                 <h5 class="form-section-title">I. STUDENT PERSONAL INFORMATION</h5>
 
-                
-                
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="small font-weight-bold">Full Name</label>
@@ -177,15 +155,12 @@ select.form-control {
                     <label class="small font-weight-bold">Home Address</label>
                     <textarea name="address" class="form-control" rows="2" placeholder="Unit/Blk, Street, Barangay, City" required></textarea>
                 </div>
+
                 <div class="form-group mb-4">
-        <label class="small font-weight-bold">Student Profile Picture</label>
-        <input type="file" name="student_image" class="form-control-file border p-2 w-100 rounded" accept="image/*" required>
-        <small class="text-muted">Please upload a formal 2x2 ID picture.</small>
-    </div>
-        <div>
-            <button type="button" onclick="window.print();" class="btn btn-outline-secondary mr-2">
-                <i class="fas fa-print mr-1"></i> PRINT FORM
-            </button>
+                    <label class="small font-weight-bold">Student Profile Picture</label>
+                    <input type="file" name="student_image" class="form-control-file border p-2 w-100 rounded" accept="image/*" required>
+                    <small class="text-muted">Please upload a formal 2x2 ID picture.</small>
+                </div>
 
                 <hr>
                 <div class="d-flex justify-content-between align-items-center mt-4">

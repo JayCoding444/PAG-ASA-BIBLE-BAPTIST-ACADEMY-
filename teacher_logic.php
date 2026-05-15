@@ -40,4 +40,31 @@ if(isset($_POST['add_teacher']))
         exit(0);
     }
 }
+// DELETE TEACHER LOGIC
+if(isset($_POST['delete_teacher'])) {
+    $teacher_id = mysqli_real_escape_string($conn, $_POST['teacher_id']);
+
+    // 1. Palitan ang 'photo' ng 'image' dito dahil 'image' ang nasa database mo
+    $check_img_query = "SELECT image FROM teachers WHERE employee_id='$teacher_id' LIMIT 1";
+    $res = mysqli_query($conn, $check_img_query);
+    $data = mysqli_fetch_array($res);
+    $image = $data['image']; 
+
+    // 2. Burahin ang record sa database
+    $query = "DELETE FROM teachers WHERE employee_id='$teacher_id'";
+    $query_run = mysqli_query($conn, $query);
+
+    if($query_run) {
+        // 3. Burahin ang file sa folder kung exist
+        if($image != '' && file_exists("uploads/".$image)) {
+            unlink("uploads/".$image);
+        }
+        
+        header("Location: manage_teachers.php?msg=Teacher Deleted Successfully");
+        exit(0);
+    } else {
+        header("Location: manage_teachers.php?msg=Something went wrong!");
+        exit(0);
+    }
+}
 ?>

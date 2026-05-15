@@ -14,11 +14,11 @@ if(isset($_GET['id'])) {
     $query = "SELECT * FROM teachers WHERE teacher_id='$teacher_id' LIMIT 1";
     $query_run = mysqli_query($conn, $query);
 
-    if(mysqli_num_rows($query_run) > 0) {
-        $teacher = mysqli_fetch_array($query_run);
+    if(mysqli_num_rows($query_run) > 0) { 
+        $teacher = mysqli_fetch_array($query_run);  
     } else {
         echo "<script>alert('Teacher Record Not Found'); window.location='manage_teachers.php';</script>";
-        exit();
+        exit(); 
     }
 }
 

@@ -26,7 +26,7 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
         .placeholder-icon { width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; }
         
         @media (max-width: 768px) {
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0; } 
         }
     </style>
 </head>

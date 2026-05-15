@@ -84,15 +84,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-book mr-2"></i> Subjects
         </a>
 
-        <a href="announcements.php" class="menu-item <?= ($current_page == 'announcements.php') ? 'active' : ''; ?>">
+        <a href="student_announcement.php" class="menu-item <?= ($current_page == 'student_announcements.php') ? 'active' : ''; ?>">
             <i class="fas fa-bullhorn mr-2"></i> Announcement
         </a>
 
-        <a href="attendance.php" class="menu-item <?= ($current_page == 'attendance.php') ? 'active' : ''; ?>">
+        <a href="student_attendance.php" class="menu-item <?= ($current_page == 'student_attendance.php') ? 'active' : ''; ?>">
             <i class="fas fa-user-check mr-2"></i> Attendance
         </a>
 
-        <a href="account_settings.php" class="menu-item <?= ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
+        <a href="student_account_settings.php" class="menu-item <?= ($current_page == 'student_account_settings.php') ? 'active' : ''; ?>">
             <i class="fas fa-cog mr-2"></i> Settings
         </a>
     </div>

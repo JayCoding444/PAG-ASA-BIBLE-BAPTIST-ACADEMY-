@@ -3,46 +3,48 @@ session_start();
 include('db_connect.php'); 
 
 if(isset($_POST['register_btn'])) {
-    // 1. Pagkuha at pag-sanitize ng data mula sa form
-    // Pinagsama ang First, Middle, at Last Name para sa 'parent_name' column
-    $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
-    $middle_name = mysqli_real_escape_string($conn, $_POST['middle_name']);
-    $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
-    $full_name = trim("$first_name $middle_name $last_name");
+    // Pagkuha ng data mula sa Session (Step 2)
+    $full_name = mysqli_real_escape_string($conn, $_SESSION['reg_student_name']);
+    $roll_number = mysqli_real_escape_string($conn, $_SESSION['reg_roll_number']);
+    $grade_level = mysqli_real_escape_string($conn, $_SESSION['reg_grade_level']);
+    $gender = mysqli_real_escape_string($conn, $_SESSION['reg_gender']);
+    $address = mysqli_real_escape_string($conn, $_SESSION['reg_address']);
+    $app_type = mysqli_real_escape_string($conn, $_SESSION['reg_application_type']);
+    $image = $_SESSION['reg_image'] ?? 'default.png';
 
-    $grade_level = mysqli_real_escape_string($conn, $_POST['grade_to_enter']);
-    $gender = mysqli_real_escape_string($conn, $_POST['sex']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
-    $parent_contact = mysqli_real_escape_string($conn, $_POST['phone']); // Gagamitin ang phone field para sa parent_contact column
+    // Pagkuha ng account details (Step 3)
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']); 
     
-    // 2. Pag-generate ng Random Roll Number
-    // Importante ito para maiwasan ang "Duplicate entry" error sa roll_number column
-    $roll_number = "PBA-" . date("Y") . "-" . rand(1000, 9999);
-    $status = "Pending";
+    // STEP 1: INSERT sa users table
+    $query_user = "INSERT INTO users (full_name, email, password, role) 
+                   VALUES ('$full_name', '$email', '$password', 'Student')";
+    
+    if(mysqli_query($conn, $query_user)) {
+        // MAHALAGA: Kunin ang bagong ID
+        $new_user_id = mysqli_insert_id($conn); 
 
-    // 3. INSERT QUERY - Siguraduhing tugma ang column names sa DB
-    // Columns: roll_number, grade_level, gender, parent_name, parent_contact, address, status
-    // Sa iyong INSERT query, idagdag ang 'Registration'
-$query = "INSERT INTO students (roll_number, grade_level, gender, parent_name, parent_contact, address, status, application_type) 
-          VALUES ('$roll_number', '$grade_level', '$gender', '$full_name', '$parent_contact', '$address', 'Pending', 'Registration')";
-    $query_run = mysqli_query($conn, $query);
-
-    if($query_run) {
-        // I-save ang data sa session para sa Success Page
-        $_SESSION['student_name'] = $full_name;
-        $_SESSION['roll_number'] = $roll_number;
+        // STEP 2: INSERT sa students table gamit ang $new_user_id
+        $query_student = "INSERT INTO students (user_id, student_name, roll_number, grade_level, gender, address, status, application_type, image) 
+                          VALUES ('$new_user_id', '$full_name', '$roll_number', '$grade_level', '$gender', '$address', 'Pending', '$app_type', '$image')";
         
-        // Redirect sa bagong Success Page imbes na sa registration.php lang
-        header("Location: registration_success.php");
-        exit(0);
+        if(mysqli_query($conn, $query_student)) {
+            // SUCCESS! Linisin ang sessions para fresh start
+            unset($_SESSION['reg_student_name']);
+            unset($_SESSION['reg_roll_number']);
+            unset($_SESSION['reg_grade_level']);
+            unset($_SESSION['reg_gender']);
+            unset($_SESSION['reg_address']);
+            unset($_SESSION['reg_application_type']);
+            unset($_SESSION['reg_image']);
+            
+            header("Location: login.php?msg=Registration Success");
+            exit();
+        } else {
+            echo "Error sa Students Table: " . mysqli_error($conn);
+        }
     } else {
-        // Kapag nag-error, ipakita ang detalye para madaling ayusin
-        $_SESSION['message'] = "Registration Failed: " . mysqli_error($conn);
-        header("Location: registration.php");
-        exit(0);
+        echo "Error sa Users Table: " . mysqli_error($conn);
     }
-} else {
-    header("Location: registration.php");
-    exit(0);
 }
 ?>

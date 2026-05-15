@@ -58,8 +58,11 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Teacher'){
         <h6 class="mt-3 font-weight-bold" style="color: #1a5276; font-size: 13px; letter-spacing: 1px;">TEACHER PORTAL</h6>
     </div>
     <a href="teacher_dashboard.php" class="menu-item active"><i class="fas fa-th-large mr-2"></i> Dashboard</a>
-    <a href="teacher_grades.php" class="menu-item"><i class="fas fa-edit mr-2"></i> Input Grades</a>
-    <a href="#" class="menu-item"><i class="fas fa-calendar-alt mr-2"></i> Class Schedule</a>
+    <a href="teacher_input_grades.php" class="menu-item"><i class="fas fa-edit mr-2"></i> Input Grades</a>
+    <a href="teacher_class_schedule.php" class="menu-item"><i class="fas fa-calendar-alt mr-2"></i> Class Schedule</a>
+     <a href="teacher_profile.php" class="menu-item">
+            <i class="fas fa-user-circle"></i> My Profile
+        </a>
     <hr>
     <a href="logout.php" class="menu-item text-danger"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
 </div>

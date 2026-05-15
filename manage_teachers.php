@@ -55,6 +55,14 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
             </button> 
         </div>
 
+        <!-- Alert Message Para sa Success/Error -->
+        <?php if(isset($_GET['msg'])): ?>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <?= $_GET['msg']; ?>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        <?php endif; ?>
+
         <div class="row mb-4">
             <div class="col-md-6"> 
                 <form action="" method="GET">
@@ -94,7 +102,6 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
                         </thead>
                         <tbody>
                             <?php
-                            // PHP LOGIC PARA SA SEARCH AT SORT
                             $query = "SELECT * FROM teachers WHERE 1=1";
 
                             if(isset($_GET['search']) && !empty($_GET['search'])) {
@@ -131,9 +138,17 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
                                                title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button class="btn btn-outline-danger btn-sm rounded-circle btn-circle ml-1 shadow-sm" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            
+                                            <!-- UPDATED DELETE BUTTON: Gumagamit na ng Form para sa POST -->
+                                            <form action="teacher_logic.php" method="POST" class="d-inline">
+                                                <input type="hidden" name="teacher_id" value="<?= $teacher['employee_id']; ?>">
+                                                <button type="submit" name="delete_teacher" 
+                                                        class="btn btn-outline-danger btn-sm rounded-circle btn-circle ml-1 shadow-sm" 
+                                                        onclick="return confirm('Are you sure you want to delete this teacher?')"
+                                                        title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     <?php
@@ -149,7 +164,9 @@ if(!isset($_SESSION['auth']) || $_SESSION['auth_role'] != 'Admin') {
         </div>  
     </div> 
 
+    <!-- Add Teacher Modal Code remains the same... -->
     <div class="modal fade" id="addTeacherModal" tabindex="-1" role="dialog">
+        <!-- ... (Keeping your original modal code here) ... -->
         <div class="modal-dialog" role="document">
             <div class="modal-content" style="border-radius: 15px;">
                 <div class="modal-header border-0">
